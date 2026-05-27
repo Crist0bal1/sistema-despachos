@@ -11,7 +11,7 @@ env:
   FRONT_IMAGE: tutorial-ssm-frontend
   AWS_REGION: us-east-1
   FRONTEND_INSTANCE_ID: i-02ae5573c548bac22 
-  FRONTEND_APP_DIR: /home/ec2-user/tutorial-frontend
+  FRONTEND_APP_DIR: /home/ssm-user/app_frontend
 
 jobs:
   build-and-push:
@@ -74,7 +74,11 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --instance-ids "${FRONTEND_INSTANCE_ID}" \
             --parameters commands="[
-              \"cd ${FRONTEND_APP_DIR}\",
-              \"docker compose pull\",
-              \"docker compose up -d\"
+              'sudo mkdir -p ${FRONTEND_APP_DIR}',
+              'sudo chmod 777 ${FRONTEND_APP_DIR}',
+              'cd ${FRONTEND_APP_DIR}',
+              'sudo docker compose down || true',
+              'sudo wget -O docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/main/docker-compose.yml || sudo wget -O docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/master/docker-compose.yml',
+              'sudo docker compose pull',
+              'sudo docker compose up -d'
             ]"

@@ -10,8 +10,8 @@ env:
   DOCKERHUB_NAMESPACE: dypaltta 
   BACK_IMAGE: tutorial-ssm-backend
   AWS_REGION: us-east-1
-  BACKEND_INSTANCE_ID:  i-03d1ac00a92a9c1bb 
-  BACKEND_APP_DIR: /home/ec2-user/tutorial-backend
+  BACKEND_INSTANCE_ID: i-03d1ac00a92a9c1bb 
+  BACKEND_APP_DIR: /home/ssm-user/app_backend
 
 jobs:
   build-and-push:
@@ -74,7 +74,11 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --instance-ids "${BACKEND_INSTANCE_ID}" \
             --parameters commands="[
-              \"cd ${BACKEND_APP_DIR}\",
-              \"docker compose pull\",
-              \"docker compose up -d\"
+              'sudo mkdir -p ${BACKEND_APP_DIR}',
+              'sudo chmod 777 ${BACKEND_APP_DIR}',
+              'cd ${BACKEND_APP_DIR}',
+              'sudo docker compose down || true',
+              'sudo wget -O docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/main/docker-compose.yml || sudo wget -O docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/master/docker-compose.yml',
+              'sudo docker compose pull',
+              'sudo docker compose up -d'
             ]"
