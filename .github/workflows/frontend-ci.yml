@@ -78,7 +78,16 @@ jobs:
               'sudo chmod 777 ${FRONTEND_APP_DIR}',
               'cd ${FRONTEND_APP_DIR}',
               'sudo docker compose down || true',
-              'sudo wget -O docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/main/docker-compose.yml || sudo wget -O docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/master/docker-compose.yml',
+              'sudo cat << \'EOF\' > docker-compose.yml',
+              'version: \"3.8\"',
+              'services:',
+              '  frontend:',
+              '    image: dypaltta/tutorial-ssm-frontend:latest',
+              '    container_name: front_despacho',
+              '    ports:',
+              '      - \"80:80\"',
+              '    restart: always',
+              'EOF',
               'sudo docker compose pull',
               'sudo docker compose up -d'
             ]"
